@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applied Chemistry Quiz — Mostafa Sallam</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--teal:#0e7490;--teal-light:#22d3ee;--red:#ef4444;--green:#10b981;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);min-height:100vh;overflow-x:hidden;padding-bottom:80px;}
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;animation:drift 12s ease-in-out infinite alternate;}
+.orb1{width:500px;height:500px;background:#0e7490;top:-100px;left:-100px;}
+.orb2{width:400px;height:400px;background:#0f766e;top:40%;right:-80px;animation-delay:3s;}
+.orb3{width:300px;height:300px;background:#1d4ed8;bottom:10%;left:20%;animation-delay:6s;}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(30px,40px) scale(1.08)}}
+.sticky{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(10,22,40,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(14,116,144,.3);padding:10px 20px;}
+.sticky-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.pill{padding:5px 14px;border-radius:20px;font-size:.8em;font-weight:600;white-space:nowrap;}
+.pill-q{background:rgba(255,255,255,.1);color:#e2e8f0;border:1px solid rgba(255,255,255,.2);}
+.pill-c{background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid #10b981;}
+.pill-w{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid #ef4444;}
+.pill-p{background:rgba(245,158,11,.2);color:#fcd34d;border:1px solid #f59e0b;}
+.prog-wrap{flex:1;background:rgba(255,255,255,.1);border-radius:8px;height:6px;min-width:60px;overflow:hidden;}
+.prog-fill{background:linear-gradient(90deg,var(--teal),var(--teal-light));height:100%;border-radius:8px;transition:width .5s;}
+#startScreen{position:relative;z-index:1;max-width:700px;margin:60px auto 0;padding:20px;}
+.start-card{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(14,116,144,.4);border-radius:24px;padding:44px 40px;box-shadow:0 40px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.1);}
+.cross-icon{font-size:3.5em;display:block;text-align:center;margin-bottom:14px;animation:pulse-icon 3s ease-in-out infinite;}
+@keyframes pulse-icon{0%,100%{transform:scale(1);filter:drop-shadow(0 0 15px rgba(34,211,238,.4))}50%{transform:scale(1.06);filter:drop-shadow(0 0 30px rgba(34,211,238,.8))}}
+.start-card h1{font-family:'Playfair Display',serif;font-size:2.2em;font-weight:900;color:#fff;text-align:center;margin-bottom:6px;}
+.subtitle{text-align:center;color:var(--teal-light);font-size:.95em;margin-bottom:4px;opacity:.85;}
+.by-line{text-align:center;color:#94a3b8;font-size:.9em;margin-bottom:26px;letter-spacing:.04em;}
+.by-line span{color:var(--teal-light);font-weight:700;}
+.section-label{color:#94a3b8;font-size:.8em;font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.filter-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+.filter-btn{padding:7px 16px;border-radius:20px;cursor:pointer;font-size:.85em;font-weight:500;transition:all .2s;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#94a3b8;font-family:'DM Sans',sans-serif;}
+.filter-btn:hover{border-color:var(--teal-light);color:var(--teal-light);background:rgba(34,211,238,.08);}
+.filter-btn.active{background:linear-gradient(135deg,rgba(14,116,144,.5),rgba(34,211,238,.2));border-color:var(--teal-light);color:var(--teal-light);box-shadow:0 0 14px rgba(34,211,238,.2);}
+.start-info{color:#64748b;font-size:.9em;text-align:center;margin-bottom:22px;}
+.start-info span{color:var(--teal-light);font-weight:700;}
+.btn-start{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--teal),#0891b2);color:#fff;font-size:1.1em;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;box-shadow:0 8px 30px rgba(14,116,144,.5);}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(14,116,144,.6);}
+#quizWrapper{display:none;padding-top:75px;position:relative;z-index:1;}
+.sec-hdr{max-width:860px;margin:30px auto 4px;padding:0 18px;display:flex;align-items:center;gap:14px;}
+.sec-hdr .line{flex:1;height:1px;background:linear-gradient(90deg,rgba(14,116,144,.5),transparent);}
+.sec-hdr .line.r{background:linear-gradient(270deg,rgba(14,116,144,.5),transparent);}
+.sec-hdr .lbl{color:var(--teal-light);font-size:.78em;font-weight:700;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;background:rgba(14,116,144,.2);border:1px solid rgba(14,116,144,.4);padding:4px 14px;border-radius:20px;}
+.q-card{max-width:860px;margin:16px auto;padding:26px 30px;background:rgba(255,255,255,.97);border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,.3);border-left:5px solid rgba(14,116,144,.3);transition:border-color .35s;animation:slideIn .3s ease both;}
+@keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.q-card.answered-correct{border-left-color:var(--green);}
+.q-card.answered-wrong{border-left-color:var(--red);}
+.q-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.q-num{background:linear-gradient(135deg,var(--teal),#0891b2);color:#fff;min-width:36px;height:36px;padding:0 6px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em;flex-shrink:0;}
+.cat-tag{background:linear-gradient(135deg,#0e7490,#0891b2);color:#fff;padding:3px 12px;border-radius:20px;font-size:.72em;font-weight:600;}
+.q-text{font-size:1.05em;font-weight:600;color:#0f172a;line-height:1.6;margin-bottom:16px;}
+.ref-box{background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:8px 14px;margin-bottom:16px;direction:ltr;font-size:.9em;color:#0c4a6e;}
+.ref-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 0;border-bottom:1px dashed #bae6fd;}
+.ref-row:last-child{border-bottom:none;}
+.ref-eq{flex:1;line-height:1.5;word-break:break-word;}
+.ref-lb{font-weight:700;color:#0e7490;white-space:nowrap;}
+.opts{display:flex;flex-direction:column;gap:9px;}
+.opt{padding:12px 18px;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer;font-size:.95em;text-align:left;background:#fff;color:#334155;transition:all .18s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:10px;}
+.opt::before{content:attr(data-letter);width:28px;height:28px;border-radius:50%;background:#f1f5f9;border:2px solid #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700;color:#64748b;flex-shrink:0;transition:all .18s;}
+.opt:hover:not(:disabled){border-color:var(--teal);background:#f0fdfa;transform:translateX(5px);}
+.opt:hover:not(:disabled)::before{background:var(--teal);border-color:var(--teal);color:#fff;}
+.opt.correct{border-color:var(--green);background:#f0fdf4;color:#065f46;font-weight:600;}
+.opt.correct::before{background:var(--green);border-color:var(--green);color:#fff;}
+.opt.wrong{border-color:var(--red);background:#fef2f2;color:#7f1d1d;}
+.opt.wrong::before{background:var(--red);border-color:var(--red);color:#fff;}
+.opt:disabled{cursor:default;}
+.q-feedback{margin-top:14px;padding:12px 16px;border-radius:12px;font-size:.88em;line-height:1.6;display:none;}
+.q-feedback.correct{background:#f0fdf4;border-left:4px solid var(--green);color:#065f46;}
+.q-feedback.wrong{background:#fef2f2;border-left:4px solid var(--red);color:#7f1d1d;}
+.pager{max-width:860px;margin:26px auto 0;padding:0 18px;}
+.pager-nums{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:18px;}
+.pg-btn{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#94a3b8;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.pg-btn:hover{border-color:var(--teal-light);color:var(--teal-light);}
+.pg-btn.done{border-color:#10b981;color:#6ee7b7;background:rgba(16,185,129,.12);}
+.pg-btn.cur{background:linear-gradient(135deg,var(--teal),#0891b2);border-color:var(--teal-light);color:#fff;box-shadow:0 0 14px rgba(34,211,238,.3);}
+.pager-row{display:flex;gap:12px;}
+.btn-nav{flex:1;padding:15px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--teal),#0891b2);color:#fff;font-size:1.05em;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;box-shadow:0 8px 30px rgba(14,116,144,.4);}
+.btn-nav:hover:not(:disabled){transform:translateY(-3px);}
+.btn-nav.sec{background:rgba(255,255,255,.08);box-shadow:none;border:1px solid rgba(255,255,255,.2);color:#cbd5e1;}
+.btn-nav:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn-nav.fin{background:linear-gradient(135deg,#059669,#10b981);}
+#resultsBox{max-width:860px;margin:24px auto;padding:40px;background:rgba(255,255,255,.97);border-radius:24px;text-align:center;display:none;box-shadow:0 30px 80px rgba(0,0,0,.4);}
+#resultsBox h2{font-family:'Playfair Display',serif;color:var(--navy);font-size:2em;margin-bottom:8px;}
+.score-ring{width:160px;height:160px;margin:20px auto;position:relative;}
+.score-ring svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:#e2e8f0;stroke-width:12;}
+.ring-fg{fill:none;stroke:url(#rg);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);}
+.score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-center .big{font-size:2.4em;font-weight:900;color:var(--navy);font-family:'Playfair Display',serif;}
+.score-center .small{font-size:.8em;color:#64748b;}
+.result-msg{font-size:1.05em;color:#475569;margin:10px 0 24px;}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{border-radius:16px;padding:16px 10px;}
+.stat-card.c{background:#f0fdf4;border:2px solid #10b981;}
+.stat-card.w{background:#fef2f2;border:2px solid #ef4444;}
+.stat-card.p{background:#fffbeb;border:2px solid #f59e0b;}
+.stat-card .num{font-size:2em;font-weight:900;font-family:'Playfair Display',serif;}
+.stat-card.c .num{color:#10b981;}.stat-card.w .num{color:#ef4444;}.stat-card.p .num{color:#f59e0b;}
+.stat-card .lbl{font-size:.8em;color:#64748b;margin-top:4px;}
+.btn-re,.btn-home{width:100%;padding:14px;border:none;border-radius:14px;font-size:1.05em;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;margin-bottom:10px;transition:all .2s;}
+.btn-re{background:linear-gradient(135deg,var(--teal),#0891b2);color:#fff;}
+.btn-home{background:#f1f5f9;color:#475569;}
+.btn-re:hover{transform:translateY(-2px);}.btn-home:hover{background:#e2e8f0;}
+.review-section{text-align:left;margin-top:24px;}
+.review-section h3{color:var(--navy);font-size:1.1em;margin-bottom:14px;font-family:'Playfair Display',serif;}
+.rev-item{padding:14px 16px;border-radius:12px;margin-bottom:10px;font-size:.88em;line-height:1.6;}
+.rev-item.wrong{background:#fef2f2;border-left:4px solid var(--red);}
+.rev-item .rt{font-weight:700;margin-bottom:5px;color:#1e293b;}
+.rev-item .exp{color:#64748b;font-size:.9em;margin-top:5px;}
+@media(max-width:600px){.start-card{padding:28px 20px}.start-card h1{font-size:1.7em}.q-card{padding:18px 14px;margin:12px 10px}#resultsBox{padding:24px 16px}.pg-btn{width:36px;height:36px}}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+
+<div class="sticky" id="stickyBar" style="display:none">
+  <div class="sticky-inner">
+    <div class="pill pill-q" id="sNum">1/7</div>
+    <div class="pill pill-c" id="sC">✅ 0</div>
+    <div class="pill pill-w" id="sW">❌ 0</div>
+    <div class="pill pill-p" id="sP">📊 0%</div>
+    <div class="prog-wrap"><div class="prog-fill" id="sFill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div id="startScreen">
+  <div class="start-card">
+    <span class="cross-icon">⚗️</span>
+    <h1>Applied Chemistry Quiz</h1>
+    <p class="subtitle">Chapter 1 Electrochemistry · MCQ · Prof. Dr. Eid Gouda</p>
+    <p class="by-line"><span>𝑩𝒀 𝑴𝑶𝑺𝑻𝑨𝑭𝑨 𝑺𝑨𝑳𝑳𝑨𝑴</span></p>
+    <p class="section-label">اختر الموضوع</p>
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="selCat('all',this)">📚 الكل (68 سؤال)</button>
+      <button class="filter-btn" onclick="selCat('c1',this)">🔋 Batteries (18)</button>
+      <button class="filter-btn" onclick="selCat('c2',this)">🦠 Rusting of Iron (8)</button>
+      <button class="filter-btn" onclick="selCat('c3',this)">⚡ Electrolysis (1)</button>
+      <button class="filter-btn" onclick="selCat('c4',this)">🟠 Electrorefining (6)</button>
+      <button class="filter-btn" onclick="selCat('c5',this)">🧱 Corrosion of Metals (24)</button>
+      <button class="filter-btn" onclick="selCat('c6',this)">🛢️ Lubricants (9)</button>
+      <button class="filter-btn" onclick="selCat('c7',this)">💧 Water Treatment (2)</button>
+    </div>
+    <p class="start-info">عدد الأسئلة: <span id="qCount">68</span> · كل صفحة <span>10</span> أسئلة · عدد الصفحات: <span id="pgCount">7</span></p>
+    <button class="btn-start" onclick="startQuiz()">ابدأ الاختبار ▶</button>
+  </div>
+</div>
+
+<div id="quizWrapper">
+  <div id="cardsContainer"></div>
+  <div class="pager" id="pagerBox">
+    <div class="pager-nums" id="pagerNums"></div>
+    <div class="pager-row">
+      <button class="btn-nav sec" id="prevBtn" onclick="goPage(page-1)">▶ السابق</button>
+      <button class="btn-nav" id="nextBtn" onclick="goPage(page+1)">◀ التالي</button>
+      <button class="btn-nav fin" id="finBtn" onclick="showResults()" style="display:none">عرض النتيجة 🎯</button>
+    </div>
+  </div>
+  <div id="resultsBox">
+    <h2>🎉 انتهى الاختبار!</h2>
+    <div class="score-ring">
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0e7490"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+        <circle class="ring-bg" cx="80" cy="80" r="64"/>
+        <circle class="ring-fg" id="ringFg" cx="80" cy="80" r="64" stroke-dasharray="402" stroke-dashoffset="402"/>
+      </svg>
+      <div class="score-center"><span class="big" id="rScore">0</span><span class="small">من <span id="rTotal">0</span></span></div>
+    </div>
+    <div class="result-msg" id="rMsg"></div>
+    <div class="stats-grid">
+      <div class="stat-card c"><div class="num" id="rC">0</div><div class="lbl">✅ صح</div></div>
+      <div class="stat-card w"><div class="num" id="rW">0</div><div class="lbl">❌ غلط</div></div>
+      <div class="stat-card p"><div class="num" id="rP">0%</div><div class="lbl">📊 النسبة</div></div>
+    </div>
+    <button class="btn-re" onclick="startQuiz()">🔄 إعادة الاختبار</button>
+    <button class="btn-home" onclick="goHome()">🏠 الرئيسية</button>
+    <div class="review-section" id="reviewDiv"></div>
+  </div>
+</div>
+
+<script>
+const L=['A','B','C','D','E','F'];
+const PER=10;
+const CATS={c1:'🔋 Batteries & Galvanic Cells',c2:'🦠 Rusting of Iron',c3:'⚡ Electrolysis',c4:'🟠 Electrorefining',c5:'🧱 Corrosion of Metals',c6:'🛢️ Lubricants',c7:'💧 Water Treatment'};
+const RANGES=[['c1',1,50],['c2',51,67],['c3',68,79],['c4',80,92],['c5',93,122],['c6',123,135],['c7',136,140]];
+function catOf(n){for(const r of RANGES){if(n>=r[1]&&n<=r[2])return r[0];}return 'c7';}
+
+const REFS={
+g1:[["Eq1","Zn(s) + Cu²⁺(aq) → Zn²⁺(aq) + Cu(s)"],["Eq2","Zn(s) → Zn²⁺(aq) + 2e⁻"],["Eq3","Cu²⁺(aq) + 2e⁻ → Cu(s)"]],
+g2:[["Eq4","Pb(s) + HSO₄⁻(aq) → PbSO₄(s) + H⁺(aq) + 2e⁻"],["Eq5","PbO₂(s) + 3H⁺(aq) + HSO₄⁻(aq) + 2e⁻ → PbSO₄(s) + 2H₂O(l)"],["Eq6","Pb(s) + PbO₂(s) + 2H⁺(aq) + 2HSO₄⁻(aq) → 2PbSO₄(s) + 2H₂O(l)"]],
+g3:[["Eq7","Zn(s) → Zn²⁺(aq) + 2e⁻"],["Eq8","2MnO₂(s) + 2NH₄⁺(aq) + 2e⁻ → Mn₂O₃(s) + 2NH₃(aq) + H₂O(l)"]],
+g4:[["Eq 9","Zn(s) + 2OH⁻(aq) → ZnO(s) + H₂O(l) + 2e⁻"],["Eq 10","2MnO₂(s) + H₂O(l) + 2e⁻ → Mn₂O₃(s) + 2OH⁻(aq)"]],
+g5:[["Eq 11","Cd(s) + 2OH⁻(aq) → Cd(OH)₂(s) + 2e⁻"],["Eq 12","NiO(OH)(s) + H₂O(l) + e⁻ → Ni(OH)₂(s) + OH⁻(aq)"]],
+g6:[["Eq 13","Li(s) → Li⁺ + e⁻"],["Eq 14","MnO₂(s) + Li⁺ + e⁻ → LiMnO₂(s)"]],
+g7:[["Eq 15","2H₂(g) + 4OH⁻(aq) → 4H₂O(l) + 4e⁻"],["Eq16","O₂(g) + 2H₂O(l) + 4e⁻ → 4OH⁻(aq)"],["Eq17","2H₂(g) + O₂(g) → 2H₂O(l)"]],
+g8:[["Eq18","Fe(s) → Fe²⁺(aq) + 2e⁻"],["Eq19","O₂(g) + 4H⁺(aq) + 4e⁻ → 2H₂O(l)"],["Eq20","4Fe²⁺(aq) + O₂(g) + 4H⁺(aq) → 4Fe³⁺(aq) + 2H₂O(l)"],["Eq21","2Fe³⁺(aq) + 4H₂O(l) → Fe₂O₃·H₂O(s) + 6H⁺(aq)"]],
+g9:[["Eq22","2Cl⁻(l) → Cl₂(g) + 2e⁻"],["Eq23","2Na⁺(l) + 2e⁻ → 2Na(l)"],["Eq24","2Na⁺(l) + 2Cl⁻(l) → 2Na(l) + Cl₂(g)"]],
+g10:[["Eq25","2H₂O(l) → O₂(g) + 4H⁺(aq) + 4e⁻"],["Eq26","4H₂O(l) + 4e⁻ → 2H₂(g) + 4OH⁻(aq)"],["Eq27","6H₂O(l) → 2H₂(g) + O₂(g) + 4H⁺(aq) + 4OH⁻(aq)"],["Eq28","4H⁺(aq) + 4OH⁻(aq) → 4H₂O(l)"],["Eq29","2H₂O(l) → 2H₂(g) + O₂(g)"]],
+g11:[["Eq30","M(s) → M²⁺(aq) + 2e⁻   (M = Cu, Zn, Fe)"],["Eq31","Cu²⁺(aq) + 2e⁻ → Cu(s)"]],
+g12:[["Eq32","2M → 2M⁺ⁿ + 2ne⁻"],["Eq33","nO₂ + 4ne⁻ → 2n O²⁻"],["Eq34","2M + nO₂ → 2M⁺ⁿ + 2n O²⁻"]],
+g13:[["Eq35","CO₂ + H₂O → H₂CO3"],["Eq36","CaCO₃(s) + H₂CO₃ → Ca(HCO₃)₂"],["Eq37","MgCO₃(s) + H₂CO₃ → Mg(HCO₃)₂"]],
+g14:[["Eq38","Ca(HCO₃)₂ → CaCO₃ + H₂O + CO₂"],["Eq39","Mg(HCO₃)₂ → MgCO₃ + H₂O + CO₂"]]
+};
+
+const Q=(n,q,o,c,e,r)=>({n:n,cat:catOf(n),q:q,opts:o,c:c,exp:e,ref:r||null});
+
+const ALL=[
+Q(1,"Batteries provide the electric current to …..",["start our automobiles","pocket calculators","digital watches","heart pacemakers, radios, and tape recorders.","all of these"],4,"البطاريات تُشغّل كل هذه الأجهزة: السيارات والآلات الحاسبة والساعات وأجهزة تنظيم القلب والراديو."),
+Q(2,"…… is an electrochemical cell, a device for interconverting chemical and electrical energy",["Battery","Transformer","Digital watches","Heart pacemakers","all of these"],0,"البطارية (Battery) خلية كهروكيميائية تحوّل بين الطاقة الكيميائية والكهربائية."),
+Q(3,"…… takes the energy released by a spontaneous chemical reaction and uses it to produce electricity.",["Battery","Transformer","Digital watches","Heart pacemakers","all of these"],0,"البطارية تستغل الطاقة المنطلقة من تفاعل كيميائي تلقائي لإنتاج الكهرباء."),
+Q(4,"……is the area of chemistry concerned with the interconversion of chemical and electrical",["Battery","Transformer","Electrochemistry","Biology","none of these"],2,"الكيمياء الكهربائية (Electrochemistry) هي فرع الكيمياء المختص بالتحويل بين الطاقة الكيميائية والكهربائية."),
+Q(5,"Types of electrochemical cells are ----",["galvanic cells","voltaic cells","electrolytic cells","A and B","all of these"],4,"أنواع الخلايا الكهروكيميائية: الجلفانية (وتسمى الفولتية) والإلكتروليتية — إذن كلها."),
+Q(6,"the galvanic cells are called also ----",["electrolytic cells","voltaic cells","A and B","all of these"],1,"الخلية الجلفانية تُسمى أيضاً الخلية الفولتية (voltaic cell)."),
+Q(7,"who conducted pioneering work in the field of electrochemistry.",["Luigi Galvani","Alessandro Volta","Alexander Graham Bell","A and B","all of these"],3,"الرائدان في الكيمياء الكهربائية هما Luigi Galvani و Alessandro Volta (A و B)."),
+Q(8,"who conducted pioneering work in the field of electrochemistry are ---",["Egyptian","American","British","Italian","all of these"],3,"كلاهما (Galvani و Volta) إيطاليان."),
+Q(14,"By far the most important practical application of-----is their use as batteries",["electrolytic cells","galvanic cells","none of these"],1,"أهم تطبيق عملي للخلايا الجلفانية هو استخدامها كبطاريات."),
+Q(15,"in multicell batteries, such as those in automobiles, the individual galvanic cells are linked in------",["series","parallel","none of these"],0,"الخلايا الفردية في بطاريات السيارات متصلة على التوالي (series) لزيادة الجهد."),
+Q(16,"a commercially successful battery should be",["Compact","lightweight","rugged","inexpensive","all of these"],4,"البطارية الناجحة تجارياً يجب أن تكون صغيرة وخفيفة ومتينة ورخيصة."),
+Q(17,"----- it used for starting automobiles for more than three-quarter of a century",["Lead storage battery","Nickel-cadmium battery","Lithium battery","all of these"],0,"بطارية الرصاص الحمضية (Lead storage) تُستخدم لتشغيل السيارات منذ أكثر من ثلاثة أرباع القرن."),
+Q(18,"a typical 12V battery consists of----cells connected in series, each cell providing a potential of about 2V",["three","eight","six","all of these"],2,"12 ÷ 2 = 6 خلايا على التوالي."),
+Q(23,"The common household batteries used as power sources for flashlights, portable radios, and tape recorders use -----",["the dry cell","Leclanché cell","A and B","Lead storage battery"],2,"البطاريات المنزلية الشائعة تستخدم الخلية الجافة (Leclanché cell) — A و B."),
+Q(24,"who invented the dry cell battery",["Luigi Galvani","Alessandro Volta","Alexander Graham Bell","Frenchman George Leclanché","all of these"],3,"الفرنسي George Leclanché هو مخترع الخلية الجافة."),
+Q(25,"A dry-cell battery has a zinc metal can, which serves as -------",["the anode","the cathode","all of these"],0,"علبة الزنك تعمل كأنود (تتأكسد)."),
+Q(26,"A dry-cell battery has an inert graphite rod surrounded by a paste of solid manganese dioxide and carbon black, which functions as -----",["the anode","the cathode","all of these"],1,"قضيب الجرافيت مع MnO₂ يعمل ككاثود."),
+Q(38,"Nickel cadmium batteries are----",["rechargeable","not rechargeable","all of these"],0,"بطاريات النيكل-كادميوم قابلة لإعادة الشحن."),
+Q(51,"---- is the oxidative deterioration of a metal, such as the conversion of iron to rust",["reduction","transformation","corrosion"],2,"التآكل (Corrosion) هو التدهور التأكسدي للمعدن مثل تحوّل الحديد إلى صدأ."),
+Q(52,"the rust , a hydrated iron (III) oxide of approximate composition is-----",["Fe₂","Fe₂O₃","Fe₂O₃·H₂O."],2,"الصدأ أكسيد حديد (III) مائي: Fe₂O₃·H₂O."),
+Q(53,"it has been estimated that as much as ---- of the steel in United States have been destroyed by corrosion.",["one fourth","one third","one half"],0,"حسب الملف: الإجابة ربع (one fourth)."),
+Q(54,"the rusting of iron requires only",["oxygen","water","both A and B"],2,"صدأ الحديد يحتاج الأكسجين والماء معاً."),
+Q(56,"the surface of the iron and a droplet of surface water constitute a tiny…..",["motor","generator","galvanic cell","all of these"],2,"سطح الحديد وقطرة الماء يكوّنان خلية جلفانية صغيرة."),
+Q(62,"factor which may influence the ease of oxidation in particular region of the surface in the rusting of iron.",["impurities","phase boundaries","mechanical stress","all of these"],3,"كل هذه العوامل (الشوائب، حدود الأطوار، الإجهاد الميكانيكي) تؤثر في سهولة الأكسدة."),
+Q(65,"metals such as------- afford a more durable surface coating for prevention of corrosion of iron",["chromium","tin","zinc","all of these"],3,"الكروم والقصدير والزنك كلها تعطي طلاءً أكثر متانة لحماية الحديد."),
+Q(66,"the steel used in making automobiles is coated by dipping into a bath of molten zinc, a process known as",["galvanizing","vaporization","freezing"],0,"غمس الصلب في الزنك المنصهر يسمى الجلفنة (Galvanizing)."),
+Q(68,"----- has two electrodes that dip into an electrolyte and are connected to a battery or some other source of direct electric current.",["electrolytic cell","galvanic cell","none of them"],0,"الخلية الإلكتروليتية قطباها مغموران في إلكتروليت ومتصلان بمصدر تيار مستمر."),
+Q(80,"The purification of a metal by means of electrolysis is called---",["electrochemical","electromagnetic","electrorefining"],2,"تنقية المعدن بالتحليل الكهربي تسمى Electrorefining."),
+Q(81,"impure copper obtained from ores is converted to pure copper in an electrolytic cell that has impure copper as the---- and pure copper as the ---",["anode, cathode","cathode, anode","none of them"],0,"النحاس غير النقي هو الأنود والنحاس النقي هو الكاثود."),
+Q(86,"During the electrorefining of copper metal, at the impure Cu anode, copper is oxidized along with more easily oxidized metallic impurities such as",["zinc and iron","silver, gold and platinum"],0,"يتأكسد النحاس مع الشوائب الأسهل أكسدة منه: الزنك والحديد."),
+Q(87,"During the electrorefining of copper metal, less easily oxidized impurities such as---- fall to the bottom of the cell as anode mud, which is reprocessed to recover the precious metals",["zinc and iron","silver, gold and platinum"],1,"الشوائب الأصعب أكسدة (الفضة والذهب والبلاتين) تسقط كطين أنودي."),
+Q(88,"During the electrorefining of copper metal, at the pure Cu cathode, Cu2+ ions -------",["are reduced to pure copper metal","remain in the solution"],0,"أيونات Cu²⁺ تُختزل إلى نحاس نقي عند الكاثود."),
+Q(89,"During the electrorefining of copper metal, the less easily reduced metal ions (Zn2+, Fe2+, and so forth) -------",["are reduced to pure copper metal","remain in the solution"],1,"الأيونات الأصعب اختزالاً (Zn²⁺, Fe²⁺) تبقى في المحلول."),
+Q(93,"The Corrosion---",["is the gradual destruction of a metal due to reactions with other chemicals in its environment.","is an oxidation process. It causes loss of metal.","is the disintegration of a metal by its surrounding chemicals through a chemical reaction on the surface of the metal","changes the appearance of the metal as it breaks down and it becomes weaker.","All of them"],4,"كل التعريفات صحيحة للتآكل."),
+Q(94,"Do all metals corrode?",["Yes","No"],1,"ليست كل المعادن تتآكل (مثل الذهب)."),
+Q(95,"Does the Gold corrode?",["Yes","No"],1,"الذهب فلز نبيل لا يتآكل."),
+Q(97,"Classification of corrosion",["Dry or Chemical Corrosion","Wet or Electrochemical corrosion","all of them"],2,"يُصنّف التآكل إلى جاف (كيميائي) ورطب (كهروكيميائي)."),
+Q(98,"Dry or Chemical Corrosion",["Occurs due to chemical attack of by the environment such as dry gas.","Occurs due to high temperature and without liquid phase.","all of them"],2,"التآكل الجاف: هجوم كيميائي بغاز جاف وعند درجات حرارة عالية وبدون طور سائل."),
+Q(99,"Dry or Chemical Corrosion type",["Oxidation corrosion","Corrosion by gases","all of them"],2,"أنواعه: التآكل بالأكسدة والتآكل بالغازات."),
+Q(100,"Oxygen molecules are attracted to the surface by Vander Wall Force is called",["Oxidation corrosion","Corrosion by gases","all of them"],0,"انجذاب جزيئات الأكسجين للسطح بقوى فاندر فالز = تآكل الأكسدة."),
+Q(104,"Corrosion by Gases such as",["Carbon di-oxide, Chlorine,","Hydrogen Sulphide,","Sulphur di-oxide, Flourine","all of them"],3,"كل هذه الغازات تسبب التآكل."),
+Q(105,"Wet or Electrochemical Corrosion",["Occurs when aqueous solution or liquid electrolytes are present","takes place in environments where the relative humidity exceeds 66 %.","is most efficient in waters containing salts, such as NaCl (e.g. marine conditions), due to the high conductivity of the solution.","all of them"],3,"كل الصفات صحيحة للتآكل الرطب."),
+Q(106,"Factors Affecting Corrosion",["Nature of the Metal","Nature of the environment","all of them"],2,"العوامل: طبيعة المعدن وطبيعة البيئة."),
+Q(107,"Nature of Metal depends on",["Position in Galvanic Series","Over Voltage","Area and Distance","Physical and Mechanical properties of Metal","all of them"],4,"طبيعة المعدن تعتمد على كل هذه العوامل."),
+Q(110,"Physical and Mechanical properties of Metal: means that",["Pure metals are more corrosion resistant.","Smaller grain size metal has high solubility and corrosion.","Uniform distribution of stress on metal reduces rate of corrosion.","Passive metals show higher corrosion resistance because of formation of protective oxide film on their surface.","Polycrystalline forms are more sensitive.","all of them"],5,"كل العبارات صحيحة."),
+Q(111,"Nature of Environment means that",["Temperature: directly proportional","Humidity: faster in humid conditions","pH : If less than 7 rate is high. Al, Zn, Sn, Pb, and Fe are affected by both acid and bases.","Impurities and Suspended Particles: When these will get dissolved in moisture, provides electrolyte for conductivity and hence corrosion increases.","all of them"],4,"كل العوامل البيئية (الحرارة، الرطوبة، pH، الشوائب) تؤثر في التآكل."),
+Q(112,"Types of corrosion",["Galvanic Corrosion","Concentration Cell Corrosion","Pitting Corrosion","Stress Corrosion","all of them"],4,"كل هذه أنواع للتآكل."),
+Q(113,"We can do Corrosion Control by",["Chemical way","Physical way","all of them"],2,"يمكن التحكم في التآكل بطريقة كيميائية أو فيزيائية."),
+Q(114,"the way to provide a barrier against the Oxygen and Water – paint, grease, oil, coat with plastic, coat with Zinc (galvanise) is called",["Chemical Protection","Physical Protection","all of them"],1,"وضع حاجز يمنع الأكسجين والماء = حماية فيزيائية."),
+Q(115,"which one is considered a Chemical Protection way",["Cathodic Protection,","Sacrificial Protection,","Galvanising,","all of them"],3,"الحماية الكاثودية والتضحوية والجلفنة كلها طرق حماية كيميائية."),
+Q(116,"which one is considered a Chemical Protection way",["Tin Plating,","Electroplating,","Anodising","all of them"],3,"طلاء القصدير والطلاء الكهربي والأنودة كلها طرق حماية كيميائية."),
+Q(117,"Connect the metal/Iron to the negative terminal of a battery –constant supply of electrons – e.g. car bodies connected to terminal of car battery. This way is called",["Cathodic Protection,","Sacrificial Protection,","Galvanising,","all of them"],0,"توصيل المعدن بالقطب السالب لبطارية = الحماية الكاثودية."),
+Q(118,"Connect the Iron to a metal higher in the electrochemical series – the higher metal donates electron to the Iron – e.g. Mg strips on the hull of a ship. This way is called",["Cathodic Protection,","Sacrificial Protection,","Galvanising,","all of them"],1,"توصيل الحديد بمعدن أنشط (مثل Mg) يضحّي بنفسه = الحماية التضحوية."),
+Q(119,"Coating with Zinc – physical barrier – when scratched acts as sacrificial protector (Zn higher than Fe in Electrochemical Series). This way is called",["Cathodic Protection,","Sacrificial Protection,","Galvanising,","all of them"],2,"الطلاء بالزنك = الجلفنة (Galvanising)."),
+Q(120,"Physical barrier only – when surface is scratched Fe protects the Sn. This way is called",["Tin Plating,","Electroplating,","Anodising","all of them"],0,"حاجز فيزيائي فقط؛ عند الخدش يتآكل الحديد = طلاء القصدير (Tin Plating)."),
+Q(121,"Connect the metal to be plated at the negative electrode. e.g Iron. Place the metal you want to plate it with at the positive terminal e.g. Nickel. This way is called",["Tin Plating,","Electroplating,","Anodising","all of them"],1,"المعدن المراد طلاؤه عند الكاثود ومعدن الطلاء عند الأنود = الطلاء الكهربي (Electroplating)."),
+Q(122,"When Al is oxidised a layer of Al2O3 forms on the surface and protects the metal atoms below from oxidation. Anodised Aluminium is strong and is used in window frames. This way is called",["Tin Plating,","Electroplating,","Anodising","all of them"],2,"تكوين طبقة Al₂O₃ الواقية على الألومنيوم = الأنودة (Anodising)."),
+Q(124,"The lubricant used can be",["a fluid","solid","plastic substance","All of them"],3,"المزلّق قد يكون سائلاً أو صلباً أو مادة بلاستيكية."),
+Q(128,"Purpose of Lubrication",["Heat reduction","Prevent oxidation and rust","Prevention of corrosion and Insulation","All of them"],3,"أغراض التزييت: تقليل الحرارة، منع الأكسدة والصدأ، منع التآكل والعزل."),
+Q(129,"Type of Lubrication",["Hydrodynamic Lubrication","Boundary Lubrication","Mixed lubrication","All of them"],3,"أنواع التزييت: هيدرودينامي وحدّي ومختلط."),
+Q(130,"---- Occurs when machine parts are completely separated by a full and continuous film of lubricant",["Hydrodynamic Lubrication","Boundary Lubrication","All of them"],0,"فصل الأجزاء تماماً بطبقة كاملة مستمرة من المزلّق = تزييت هيدرودينامي."),
+Q(131,"----- is a cross between boundary and hydrodynamic lubrication.",["Hydrodynamic Lubrication","Boundary Lubrication","Mixed lubrication"],2,"التزييت المختلط (Mixed) هو خليط بين الحدّي والهيدرودينامي."),
+Q(132,"which one is not true for a good lubricant characteristic",["A high boiling point and low freezing point","A low viscosity indexes","Thermal stability","Hydraulic stability"],1,"المزلّق الجيد له مؤشر لزوجة عالٍ وليس منخفضاً، فالخيار B غير صحيح."),
+Q(133,"which one is not true for a good lubricant characteristic",["Demulsibility","Corrosion prevention","A low resistance to oxidation","Hydraulic stability"],2,"المزلّق الجيد له مقاومة عالية للأكسدة وليس منخفضة، فالخيار C غير صحيح."),
+Q(134,"Greases are lubricant of type",["Liquid","Solid","Semi solid","Gases"],2,"الشحوم مزلّقات شبه صلبة (Semi solid)."),
+Q(135,"Mineral oil or synthetic oils are lubricant of type",["Liquid","Solid","Semi solid","Gases"],0,"الزيوت المعدنية أو الصناعية مزلّقات سائلة."),
+Q(139,"Type of water Hardness",["Temporary Hardness","Permanent hardness","All of them"],2,"عسر الماء نوعان: مؤقت ودائم."),
+Q(140,"It is due to the presence of Ca2+, Mg2+ in the form of the bicarbonate ion HCO3-, being present in the water.",["Temporary Hardness","Permanent hardness","All of them"],0,"وجود Ca²⁺ و Mg²⁺ على شكل بيكربونات = عسر مؤقت.")
+];
+
+let pool=[],page=0,cat='all',answers={};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const getPool=()=>cat==='all'?ALL.slice():ALL.filter(q=>q.cat===cat);
+const totalPages=()=>Math.ceil(pool.length/PER);
+
+function selCat(c,btn){
+  cat=c;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const n=getPool().length;
+  $('qCount').textContent=n;
+  $('pgCount').textContent=Math.ceil(n/PER);
+}
+
+function startQuiz(){
+  pool=getPool();page=0;answers={};
+  $('startScreen').style.display='none';
+  $('quizWrapper').style.display='block';
+  $('stickyBar').style.display='block';
+  $('resultsBox').style.display='none';
+  $('cardsContainer').style.display='block';
+  $('pagerBox').style.display='block';
+  renderPage();updateStats();
+}
+
+function goPage(p){
+  if(p<0||p>=totalPages())return;
+  page=p;renderPage();
+}
+
+function cardHTML(q){
+  const a=answers[q.n];
+  let h='<div class="q-card'+(a===undefined?'':(a===q.c?' answered-correct':' answered-wrong'))+'" id="card'+q.n+'">';
+  h+='<div class="q-header"><div class="q-num">'+q.n+'</div><span class="cat-tag">'+CATS[q.cat]+'</span></div>';
+  h+='<div class="q-text">'+esc(q.q)+'</div>';
+  if(q.ref&&REFS[q.ref]){
+    h+='<div class="ref-box">'+REFS[q.ref].map(r=>'<div class="ref-row"><span class="ref-eq">'+esc(r[1])+'</span><span class="ref-lb">'+esc(r[0])+'</span></div>').join('')+'</div>';
+  }
+  h+='<div class="opts">';
+  q.opts.forEach((o,i)=>{
+    let cls='opt';
+    if(a!==undefined){if(i===q.c)cls+=' correct';else if(i===a)cls+=' wrong';}
+    h+='<button class="'+cls+'" data-letter="'+L[i]+'"'+(a!==undefined?' disabled':'')+' onclick="answer('+q.n+','+i+')">'+esc(o)+'</button>';
+  });
+  h+='</div>';
+  if(a!==undefined){
+    const ok=a===q.c;
+    h+='<div class="q-feedback '+(ok?'correct':'wrong')+'" style="display:block">'+(ok?'✅ إجابة صحيحة. ':'❌ الإجابة الصحيحة: '+L[q.c]+'. ')+esc(q.exp)+'</div>';
+  } else h+='<div class="q-feedback"></div>';
+  return h+'</div>';
+}
+
+function renderPage(){
+  const tp=totalPages();
+  const start=page*PER,items=pool.slice(start,start+PER);
+  let h='<div class="sec-hdr"><div class="line"></div><div class="lbl">صفحة '+(page+1)+' من '+tp+' · أسئلة '+(start+1)+'–'+(start+items.length)+'</div><div class="line r"></div></div>';
+  h+=items.map(cardHTML).join('');
+  $('cardsContainer').innerHTML=h;
+  // pager
+  let nums='';
+  for(let i=0;i<tp;i++){
+    const sl=pool.slice(i*PER,i*PER+PER);
+    const done=sl.every(q=>answers[q.n]!==undefined);
+    nums+='<button class="pg-btn'+(i===page?' cur':(done?' done':''))+'" onclick="goPage('+i+')">'+(i+1)+'</button>';
+  }
+  $('pagerNums').innerHTML=nums;
+  $('prevBtn').disabled=page===0;
+  const last=page===tp-1;
+  $('nextBtn').style.display=last?'none':'block';
+  $('finBtn').style.display=last?'block':'none';
+  updateStats();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function answer(n,i){
+  if(answers[n]!==undefined)return;
+  answers[n]=i;
+  const q=ALL.find(x=>x.n===n);
+  const old=$('card'+n);
+  const tmp=document.createElement('div');
+  tmp.innerHTML=cardHTML(q);
+  const fresh=tmp.firstChild;
+  fresh.style.animation='none';
+  old.replaceWith(fresh);
+  // refresh page-number dots
+  const tp=totalPages();
+  document.querySelectorAll('#pagerNums .pg-btn').forEach((b,idx)=>{
+    if(idx===page)return;
+    const sl=pool.slice(idx*PER,idx*PER+PER);
+    b.classList.toggle('done',sl.every(x=>answers[x.n]!==undefined));
+  });
+  updateStats();
+}
+
+function stats(){
+  let c=0,w=0;
+  pool.forEach(q=>{const a=answers[q.n];if(a===undefined)return;if(a===q.c)c++;else w++;});
+  return {c:c,w:w,done:c+w};
+}
+
+function updateStats(){
+  const s=stats(),tot=pool.length;
+  $('sNum').textContent='صفحة '+(page+1)+'/'+totalPages();
+  $('sC').textContent='✅ '+s.c;
+  $('sW').textContent='❌ '+s.w;
+  $('sP').textContent='📊 '+(s.done?Math.round(s.c/s.done*100):0)+'%';
+  $('sFill').style.width=(tot?s.done/tot*100:0)+'%';
+}
+
+function showResults(){
+  const s=stats(),tot=pool.length;
+  const pct=tot?Math.round(s.c/tot*100):0;
+  $('cardsContainer').style.display='none';
+  $('pagerBox').style.display='none';
+  $('resultsBox').style.display='block';
+  $('rScore').textContent=s.c;
+  $('rTotal').textContent=tot;
+  $('rC').textContent=s.c;
+  $('rW').textContent=s.w;
+  $('rP').textContent=pct+'%';
+  const un=tot-s.done;
+  let m=pct>=90?'ممتاز! 🌟':pct>=75?'جيد جداً 👏':pct>=60?'جيد، كمّل مراجعة 💪':'محتاج مراجعة أكتر 📖';
+  if(un>0)m+=' — لم تُجب على '+un+' سؤال';
+  $('rMsg').textContent=m;
+  $('ringFg').style.strokeDashoffset=402;
+  setTimeout(()=>{$('ringFg').style.strokeDashoffset=402*(1-pct/100);},60);
+  const wrong=pool.filter(q=>answers[q.n]!==undefined&&answers[q.n]!==q.c);
+  let r='';
+  if(wrong.length){
+    r='<h3>مراجعة الأسئلة الخاطئة ('+wrong.length+')</h3>';
+    wrong.forEach(q=>{
+      r+='<div class="rev-item wrong"><div class="rt">Q'+q.n+'. '+esc(q.q)+'</div><div>إجابتك: '+esc(q.opts[answers[q.n]])+'</div><div>الصحيحة: '+esc(q.opts[q.c])+'</div><div class="exp">'+esc(q.exp)+'</div></div>';
+    });
+  }
+  $('reviewDiv').innerHTML=r;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goHome(){
+  $('quizWrapper').style.display='none';
+  $('stickyBar').style.display='none';
+  $('startScreen').style.display='block';
+  window.scrollTo({top:0});
+}
+</script>
+</body>
+</html>
